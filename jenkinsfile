@@ -69,12 +69,28 @@ node {
 
 input 'Deploy to stagging?'
 
-stage name:"Deploy", concurrency: 1
+stage name:"Deploy to stage", concurrency: 1
 node { 
      sh "echo '<h1> ${env.BUILD_DISPLAY_NAME}</h1>' >> app/index.html"
 
-     sh 'docker-compose up -d --build'
+     sh 'docker-compose -f stage-docker-compose.yml up -d --build'
      
      notify 'Solitaire Deployed!'
 }
 
+node {
+
+    notify("Deploy to Production?")
+
+}
+
+input 'Deploy to Production?'
+
+stage name:"Deploy to Production", concurrency: 1
+node {
+     sh "echo '<h1> ${env.BUILD_DISPLAY_NAME}</h1>' >> app/index.html"
+
+     sh 'docker-compose -f prod-docker-compose.yml up -d --build'
+
+     notify 'Solitaire Deployed!'
+}
